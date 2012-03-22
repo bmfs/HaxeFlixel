@@ -2,6 +2,7 @@ package addonsTests;
 
 import addons.FlxCaveGenerator;
 import org.flixel.FlxAssets;
+import org.flixel.FlxBasic;
 import org.flixel.FlxG;
 import org.flixel.FlxState;
 import org.flixel.FlxTilemap;
@@ -11,7 +12,7 @@ import org.flixel.FlxTilemap;
  * @author Zaphod
  */
 
-class CaveGeneratorTest extends FlxState
+class CaveGeneratorTest<T : FlxBasic> extends FlxState<FlxBasic>
 {
 
 	public function new() 

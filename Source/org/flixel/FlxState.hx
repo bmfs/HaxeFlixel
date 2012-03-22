@@ -8,7 +8,7 @@ import org.flixel.system.FlxQuadTree;
  * It is for all intents and purpose a fancy FlxGroup.
  * And really, it's not even that fancy.
  */
-class FlxState extends FlxGroup
+class FlxState<T : FlxBasic> extends FlxGroup<FlxBasic>
 {
 	
 	public function new()

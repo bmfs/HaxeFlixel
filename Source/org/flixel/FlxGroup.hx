@@ -5,7 +5,7 @@ package org.flixel;
  * NOTE: Although <code>FlxGroup</code> extends <code>FlxBasic</code>, it will not automatically
  * add itself to the global collisions quad tree, it will only add its members.
  */
-class FlxGroup extends FlxBasic
+class FlxGroup<T : FlxBasic> extends FlxBasic
 {
 	
 	public var maxSize(getMaxSize, setMaxSize):Int;
@@ -22,7 +22,7 @@ class FlxGroup extends FlxBasic
 	/**
 	 * Array of all the <code>FlxBasic</code>s that exist in this group.
 	 */
-	public var members:Array<FlxBasic>;
+	public var members:Array<T>;
 	/**
 	 * The number of entries in the members array.
 	 * For performance and safety you should check this variable
@@ -55,7 +55,7 @@ class FlxGroup extends FlxBasic
 	public function new(?MaxSize:Int = 0)
 	{
 		super();
-		members = new Array<FlxBasic>();
+		members = new Array<T>();
 		length = 0;
 		_maxSize = Math.floor(Math.abs(MaxSize));
 		_marker = 0;
@@ -70,7 +70,7 @@ class FlxGroup extends FlxBasic
 	{
 		if(members != null)
 		{
-			var basic:FlxBasic;
+			var basic:T;
 			var i:Int = 0;
 			while(i < length)
 			{
@@ -97,7 +97,7 @@ class FlxGroup extends FlxBasic
 	 */
 	override public function update():Void
 	{
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = 0;
 		while(i < length)
 		{
@@ -116,7 +116,7 @@ class FlxGroup extends FlxBasic
 	 */
 	override public function draw():Void
 	{
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = 0;
 		while(i < length)
 		{
@@ -152,7 +152,7 @@ class FlxGroup extends FlxBasic
 		}
 		
 		//If the max size has shrunk, we need to get rid of some objects
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = _maxSize;
 		var l:Int = members.length;
 		while(i < l)
@@ -163,7 +163,7 @@ class FlxGroup extends FlxBasic
 				basic.destroy();
 			}
 		}
-		length = /*members.length =*/ _maxSize;
+		length = _maxSize;
 		FlxU.SetArrayLength(members, _maxSize);
 		return _maxSize;
 	}
@@ -178,7 +178,7 @@ class FlxGroup extends FlxBasic
 	 * @param	Object		The object you want to add to the group.
 	 * @return	The same <code>FlxBasic</code> object that was passed in.
 	 */
-	public function add(Object:FlxBasic):FlxBasic
+	public function add(Object:T):T
 	{
 		//Don't bother adding an object twice.
 		if (FlxU.ArrayIndexOf(members, Object) >= 0)
@@ -252,9 +252,9 @@ class FlxGroup extends FlxBasic
 	 * @param	ObjectClass		The class type you want to recycle (e.g. FlxSprite, EvilRobot, etc). Do NOT "new" the class in the parameter!
 	 * @return	A reference to the object that was created.  Don't forget to cast it back to the Class you want (e.g. myObject = myGroup.recycle(myObjectClass) as myObjectClass;).
 	 */
-	public function recycle(?ObjectClass:Class<FlxBasic> = null):FlxBasic
+	public function recycle(?ObjectClass:Class<T> = null):T
 	{
-		var basic:FlxBasic;
+		var basic:T;
 		if(_maxSize > 0)
 		{
 			if(length < _maxSize)
@@ -296,7 +296,7 @@ class FlxGroup extends FlxBasic
 	 * @param	Splice	Whether the object should be cut from the array entirely or not.
 	 * @return	The removed object.
 	 */
-	public function remove(Object:FlxBasic, Splice:Bool = false):FlxBasic
+	public function remove(Object:T, Splice:Bool = false):T
 	{
 		//var index:Int = members.indexOf(Object);
 		var index:Int = FlxU.ArrayIndexOf(members, Object);
@@ -322,7 +322,7 @@ class FlxGroup extends FlxBasic
 	 * @param	NewObject	The new object you want to use instead.
 	 * @return	The new object.
 	 */
-	public function replace(OldObject:FlxBasic, NewObject:FlxBasic):FlxBasic
+	public function replace(OldObject:T, NewObject:T):T
 	{
 		//var index:Int = members.indexOf(OldObject);
 		var index:Int = FlxU.ArrayIndexOf(members, OldObject);
@@ -358,7 +358,7 @@ class FlxGroup extends FlxBasic
 	 */
 	public function setAll(VariableName:String, Value:Dynamic, ?Recurse:Bool = true):Void
 	{
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = 0;
 		while(i < length)
 		{
@@ -367,7 +367,7 @@ class FlxGroup extends FlxBasic
 			{
 				if (Recurse && Std.is(basic, FlxGroup))
 				{
-					cast(basic, FlxGroup).setAll(VariableName, Value, Recurse);
+					(cast basic).setAll(VariableName, Value, Recurse);
 				}
 				else
 				{
@@ -386,7 +386,7 @@ class FlxGroup extends FlxBasic
 	 */ 
 	public function callAll(FunctionName:String, Recurse:Bool = true):Void
 	{
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = 0;
 		while(i < length)
 		{
@@ -395,7 +395,7 @@ class FlxGroup extends FlxBasic
 			{
 				if (Recurse && Std.is(basic, FlxGroup))
 				{
-					cast(basic, FlxGroup).callAll(FunctionName, Recurse);
+					(cast basic).callAll(FunctionName, Recurse);
 				}
 				else
 				{
@@ -412,9 +412,9 @@ class FlxGroup extends FlxBasic
 	 * @param	ObjectClass		An optional parameter that lets you narrow the results to instances of this particular class.
 	 * @return	A <code>FlxBasic</code> currently flagged as not existing.
 	 */
-	public function getFirstAvailable(?ObjectClass:Class<FlxBasic> = null):FlxBasic
+	public function getFirstAvailable(?ObjectClass:Class<T> = null):T
 	{
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = 0;
 		while(i < length)
 		{
@@ -434,7 +434,7 @@ class FlxGroup extends FlxBasic
 	 */
 	public function getFirstNull():Int
 	{
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = 0;
 		var l:Int = members.length;
 		while(i < l)
@@ -456,9 +456,9 @@ class FlxGroup extends FlxBasic
 	 * This is handy for checking if everything's wiped out, or choosing a squad leader, etc.
 	 * @return	A <code>FlxBasic</code> currently flagged as existing.
 	 */
-	public function getFirstExtant():FlxBasic
+	public function getFirstExtant():T
 	{
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = 0;
 		while(i < length)
 		{
@@ -477,9 +477,9 @@ class FlxGroup extends FlxBasic
 	 * 
 	 * @return	A <code>FlxBasic</code> currently flagged as not dead.
 	 */
-	public function getFirstAlive():FlxBasic
+	public function getFirstAlive():T
 	{
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = 0;
 		while(i < length)
 		{
@@ -498,9 +498,9 @@ class FlxGroup extends FlxBasic
 	 * 
 	 * @return	A <code>FlxBasic</code> currently flagged as dead.
 	 */
-	public function getFirstDead():FlxBasic
+	public function getFirstDead():T
 	{
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = 0;
 		while(i < length)
 		{
@@ -520,7 +520,7 @@ class FlxGroup extends FlxBasic
 	public function countLiving():Int
 	{
 		var count:Int = -1;
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = 0;
 		while(i < length)
 		{
@@ -547,7 +547,7 @@ class FlxGroup extends FlxBasic
 	public function countDead():Int	
 	{
 		var count:Int = -1;
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = 0;
 		while(i < length)
 		{
@@ -575,7 +575,7 @@ class FlxGroup extends FlxBasic
 	 * 
 	 * @return	A <code>FlxBasic</code> from the members list.
 	 */
-	public function getRandom(?StartIndex:Int = 0, ?Length:Int = 0):FlxBasic
+	public function getRandom(?StartIndex:Int = 0, ?Length:Int = 0):T
 	{
 		if (StartIndex < 0)
 		{
@@ -585,7 +585,7 @@ class FlxGroup extends FlxBasic
 		{
 			Length = length;
 		}
-		return cast(FlxG.getRandom(members, StartIndex, Length), FlxBasic);
+		return FlxG.getRandom(members, StartIndex, Length);
 	}
 	
 	/**
@@ -604,7 +604,7 @@ class FlxGroup extends FlxBasic
 	 */
 	override public function kill():Void
 	{
-		var basic:FlxBasic;
+		var basic:T;
 		var i:Int = 0;
 		while(i < length)
 		{
@@ -623,7 +623,7 @@ class FlxGroup extends FlxBasic
 	 * @param	Obj2	The second object being sorted.
 	 * @return	An integer value: -1 (Obj1 before Obj2), 0 (same), or 1 (Obj1 after Obj2).
 	 */
-	private function sortHandler(Obj1:FlxBasic, Obj2:FlxBasic):Int
+	private function sortHandler(Obj1:T, Obj2:T):Int
 	{
 		//if (Obj1[_sortIndex] < Obj2[_sortIndex])
 		if (Reflect.field(Obj1, _sortIndex) < Reflect.field(Obj2, _sortIndex))

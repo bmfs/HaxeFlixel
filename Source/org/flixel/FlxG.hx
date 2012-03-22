@@ -222,7 +222,7 @@ class FlxG
 	/**
 	 * A list of all the sounds being played in the game.
 	 */
-	static public var sounds:FlxGroup;
+	static public var sounds:FlxGroup<FlxSound>;
 	/**
 	 * Whether or not the game sounds are muted.
 	 */
@@ -471,7 +471,7 @@ class FlxG
 	 * @param	Timeout		Optional parameter: set a time limit for the replay.  CancelKeys will override this if pressed.
 	 * @param	Callback	Optional parameter: if set, called when the replay finishes.  Running to the end, CancelKeys, and Timeout will all trigger Callback(), but only once, and CancelKeys and Timeout will NOT call FlxG.stopReplay() if Callback is set!
 	 */
-	static public function loadReplay(Data:String, ?State:FlxState = null, ?CancelKeys:Array<String> = null, ?Timeout:Float = 0, ?Callback:Dynamic = null):Void
+	static public function loadReplay(Data:String, ?State:FlxState<FlxBasic> = null, ?CancelKeys:Array<String> = null, ?Timeout:Float = 0, ?Callback:Dynamic = null):Void
 	{
 		_game._replay.load(Data);
 		if (State == null)
@@ -617,7 +617,7 @@ class FlxG
 			FlxG.log("WARNING: FlxG.loadSound() requires either\nan embedded sound or a URL to work.");
 			return null;
 		}
-		var sound:FlxSound = cast(sounds.recycle(FlxSound), FlxSound);
+		var sound:FlxSound = sounds.recycle(FlxSound);
 		if (EmbeddedSound != null)
 		{
 			sound.loadEmbedded(EmbeddedSound, Looped, AutoDestroy);
@@ -717,7 +717,7 @@ class FlxG
 		{
 			if (Std.is(sounds.members[i], FlxSound))
 			{
-				sound = cast(sounds.members[i++], FlxSound);
+				sound = sounds.members[i++];
 				if ((sound != null) && (ForceDestroy || !sound.survive))
 				{
 					sound.destroy();
@@ -759,7 +759,7 @@ class FlxG
 		var l:Int = sounds.length;
 		while(i < l)
 		{
-			sound = cast(sounds.members[i++], FlxSound);
+			sound = sounds.members[i++];
 			if ((sound != null) && sound.exists && sound.active)
 			{
 				sound.pause();
@@ -781,7 +781,7 @@ class FlxG
 		var l:Int = sounds.length;
 		while(i < l)
 		{
-			sound = cast(sounds.members[i++], FlxSound);
+			sound = sounds.members[i++];
 			if ((sound != null) && sound.exists)
 			{
 				sound.resume();
@@ -992,12 +992,12 @@ class FlxG
 		return null;
 	}
 	
-	public static var state(getState, null):FlxState;
+	public static var state(getState, null):FlxState<FlxBasic>;
 	
 	/**
 	 * Read-only: access the current game state from anywhere.
 	 */
-	static public function getState():FlxState
+	static public function getState():FlxState<FlxBasic>
 	{
 		return _game._state;
 	}
@@ -1005,7 +1005,7 @@ class FlxG
 	/**
 	 * Switch from the current game state to the one specified here.
 	 */
-	static public function switchState(State:FlxState):Void
+	static public function switchState(State:FlxState<FlxBasic>):Void
 	{
 		_game._requestedState = State;
 	}

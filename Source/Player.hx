@@ -6,22 +6,23 @@ import org.flixel.FlxEmitter;
 import org.flixel.FlxG;
 import org.flixel.FlxGroup;
 import org.flixel.FlxObject;
+import org.flixel.FlxParticle;
 import org.flixel.FlxSprite;
 
 class Player extends FlxSprite
 {
 	private var _jumpPower:Int;
-	private var _bullets:FlxGroup;
+	private var _bullets:FlxGroup<Bullet>;
 	private var _aim:Int;
 	private var _restart:Float;
-	private var _gibs:FlxEmitter;
+	private var _gibs:FlxEmitter<FlxParticle>;
 	
 	public var isReadyToJump:Bool;
 	
 	//This is the player object class.  Most of the comments I would put in here
 	//would be near duplicates of the Enemy class, so if you're confused at all
 	//I'd recommend checking that out for some ideas!
-	public function new(X:Int, Y:Int, Bullets:FlxGroup, Gibs:FlxEmitter)
+	public function new(X:Int, Y:Int, Bullets:FlxGroup<Bullet>, Gibs:FlxEmitter<FlxParticle>)
 	{
 		super(X,Y);
 		loadGraphic("assets/spaceman.png", true, true, 8);
@@ -161,7 +162,7 @@ class Player extends FlxSprite
 			else
 			{
 				getMidpoint(_point);
-				cast(_bullets.recycle(Bullet), Bullet).shoot(_point, _aim);
+				_bullets.recycle(Bullet).shoot(_point, _aim);
 				if(_aim == FlxObject.DOWN)
 				{
 					velocity.y -= 36;

@@ -12,7 +12,7 @@ import org.flixel.FlxParticle;
  * @link https://github.com/krix/ParticleTest
  */
 
-class FlxEmitterExt extends FlxEmitter 
+class FlxEmitterExt<T : FlxParticle> extends FlxEmitter<FlxParticle>
 {		
 	/**
 	 * 	Launch Direction.
@@ -131,7 +131,7 @@ class FlxEmitterExt extends FlxEmitter
 	override public function emitParticle():Void
 	{
 		//recycle a particle to emit
-		var particle:FlxParticle = cast(recycle(FlxParticle), FlxParticle);
+		var particle:FlxParticle = recycle(FlxParticle);
 		particle.elasticity = bounce;
 		particle.reset(x - (Math.floor(particle.width) >> 1) + FlxG.random() * width, y - (Math.floor(particle.height) >> 1) + FlxG.random() * height);
 		particle.visible = true;

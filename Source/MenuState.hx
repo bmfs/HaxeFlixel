@@ -3,7 +3,9 @@ package;
 import nme.Assets;
 import nme.geom.Rectangle;
 import nme.net.SharedObject;
+import org.flixel.FlxBasic;
 import org.flixel.FlxButton;
+import org.flixel.FlxParticle;
 //import org.flixel.FlxEmitter;
 import addons.FlxEmitterExt;
 import org.flixel.FlxG;
@@ -14,10 +16,10 @@ import org.flixel.FlxState;
 import org.flixel.FlxText;
 import org.flixel.FlxU;
 
-class MenuState extends FlxState
+class MenuState<T : FlxBasic> extends FlxState<FlxBasic>
 {
 	//public var gibs:FlxEmitter;
-	public var gibs:FlxEmitterExt;
+	public var gibs:FlxEmitterExt<FlxParticle>;
 	public var playButton:FlxButton;
 	public var title1:FlxText;
 	public var title2:FlxText;
@@ -52,7 +54,7 @@ class MenuState extends FlxState
 
 		//All the bits that blow up when the text smooshes together
 	//	gibs = new FlxEmitter(FlxG.width / 2 - 50, FlxG.height / 2 - 10);
-		gibs = new FlxEmitterExt(FlxG.width / 2 - 50, FlxG.height / 2 - 10);
+		gibs = new FlxEmitterExt<FlxParticle>(FlxG.width / 2 - 50, FlxG.height / 2 - 10);
 		gibs.setSize(100, 30);
 		gibs.setYSpeed( -200, -20);
 		gibs.setRotation( -720, 720);
@@ -198,7 +200,7 @@ class MenuState extends FlxState
 	{
 		if(attractMode)
 		{
-			FlxG.loadReplay((FlxG.random() < 0.5)?(Assets.getText("assets/attract1.fgr")):(Assets.getText("assets/attract2.fgr")), new PlayState(), ["ANY"], 22, onDemoComplete);
+			FlxG.loadReplay((FlxG.random() < 0.5)?(Assets.getText("assets/attract1.fgr")):(Assets.getText("assets/attract2.fgr")), new PlayState<FlxBasic>(), ["ANY"], 22, onDemoComplete);
 		}
 		else
 		{

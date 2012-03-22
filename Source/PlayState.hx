@@ -2,12 +2,14 @@ package;
 
 import nme.Assets;
 import nme.events.MouseEvent;
+import org.flixel.FlxBasic;
 import org.flixel.FlxButton;
 import org.flixel.FlxCamera;
 import org.flixel.FlxEmitter;
 import org.flixel.FlxG;
 import org.flixel.FlxGroup;
 import org.flixel.FlxObject;
+import org.flixel.FlxParticle;
 import org.flixel.FlxPoint;
 import org.flixel.FlxSprite;
 import org.flixel.FlxState;
@@ -17,7 +19,7 @@ import org.flixel.FlxTilemap;
 import org.flixel.tileSheetManager.TileSheetData;
 import org.flixel.tileSheetManager.TileSheetManager;
 
-class PlayState extends FlxState
+class PlayState<T : FlxBasic> extends FlxState<FlxBasic>
 {
 	public static inline var TILE_SIZE:Int = 8;
 	public static inline var MAP_WIDTH_IN_TILES:Int = 80;
@@ -26,20 +28,20 @@ class PlayState extends FlxState
 	private var tileMap:FlxTilemap;
 	
 	//major game object storage
-	private var _decorations:FlxGroup;
-	private var _bullets:FlxGroup;
+	private var _decorations:FlxGroup<FlxBasic>;
+	private var _bullets:FlxGroup<Bullet>;
 	private var _player:Player;
-	private var _enemies:FlxGroup;
-	private var _spawners:FlxGroup;
-	private var _enemyBullets:FlxGroup;
-	private var _littleGibs:FlxEmitter;
-	private var _bigGibs:FlxEmitter;
-	private var _hud:FlxGroup;
-	private var _gunjam:FlxGroup;
+	private var _enemies:FlxGroup<Enemy>;
+	private var _spawners:FlxGroup<Spawner>;
+	private var _enemyBullets:FlxGroup<EnemyBullet>;
+	private var _littleGibs:FlxEmitter<FlxParticle>;
+	private var _bigGibs:FlxEmitter<FlxParticle>;
+	private var _hud:FlxGroup<FlxBasic>;
+	private var _gunjam:FlxGroup<FlxBasic>;
 	
 	//meta groups, to help speed up collisions
-	private var _objects:FlxGroup;
-	private var _hazards:FlxGroup;
+	private var _objects:FlxGroup<FlxBasic>;
+	private var _hazards:FlxGroup<FlxBasic>;
 	
 	//HUD/User Interface stuff
 	#if flash
@@ -77,6 +79,7 @@ class PlayState extends FlxState
 		_littleGibs.gravity = 350;
 		_littleGibs.bounce = 0.5;
 		_littleGibs.makeParticles(FlxAssets.imgGibs, 100, 10, true, 0.5);
+		_littleGibs.setAll("cameras", [FlxG.camera]);
 		
 		//Next we create a smaller pool of larger metal bits for exploding.
 		_bigGibs = new FlxEmitter();
@@ -85,7 +88,12 @@ class PlayState extends FlxState
 		_bigGibs.setRotation( -720, -720);
 		_bigGibs.gravity = 350;
 		_bigGibs.bounce = 0.35;
+		#if flash
 		_bigGibs.makeParticles(FlxAssets.imgSpawnerGibs, 50, 20, true, 0.5);
+		#else
+		_bigGibs.makeParticles(FlxAssets.imgSpawnerGibs, 25, 20, true, 0.5);
+		#end
+		_bigGibs.setAll("cameras", [FlxG.camera]);
 		
 		//Then we'll set up the rest of our object groups or pools
 		_decorations = new FlxGroup();
@@ -93,7 +101,7 @@ class PlayState extends FlxState
 		#if flash
 		_enemies.maxSize = 50;
 		#else
-		_enemies.maxSize = 25;
+		_enemies.maxSize = 16;
 		#end
 		_spawners = new FlxGroup();
 		_hud = new FlxGroup();
@@ -205,7 +213,7 @@ class PlayState extends FlxState
 		FlxG.flash(0xff131c1b);
 		_fading = false;
 		
-		FlxG.sounds.maxSize = 16;
+		FlxG.sounds.maxSize = 20;
 		
 		//Debugger Watch examples
 		//FlxG.watch(_player, "x");
@@ -219,35 +227,26 @@ class PlayState extends FlxState
 		TileSheetManager.setTileSheetIndex(cast(_hud.getFirstAlive(), FlxSprite).getTileSheetIndex(), TileSheetManager.getMaxIndex());
 		#end
 		
-		LeftButton = new FlxButton(1000, 0, "Left");
-		LeftButton.scrollFactor = new FlxPoint(1.0, 1.0);
+		LeftButton = new FlxButton(10, (FlxG.height - 20), "Left");
+		LeftButton.scrollFactor = new FlxPoint(0.0, 0.0);
 		LeftButton.color = 0xff729954;
 		LeftButton.label.color = 0xffd8eba2;
+		LeftButton.cameras = [FlxG.camera];
 		add(LeftButton);
 		
-		var leftCam:FlxCamera = new FlxCamera(Math.floor(10 * FlxG.camera.zoom), Math.floor((FlxG.height - 20) * FlxG.camera.zoom), Math.floor(LeftButton.width), Math.floor(LeftButton.height));
-		leftCam.follow(LeftButton, FlxCamera.STYLE_NO_DEAD_ZONE);
-		FlxG.addCamera(leftCam);
-		
-		RightButton = new FlxButton(1000, 100, "Right");
-		RightButton.scrollFactor = new FlxPoint(1.0, 1.0);
+		RightButton = new FlxButton(100, (FlxG.height - 20), "Right");
+		RightButton.scrollFactor = new FlxPoint(0.0, 0.0);
 		RightButton.color = 0xff729954;
 		RightButton.label.color = 0xffd8eba2;
+		RightButton.cameras = [FlxG.camera];
 		add(RightButton);
 		
-		var rightCam:FlxCamera = new FlxCamera(Math.floor(100 * FlxG.camera.zoom), Math.floor((FlxG.height - 20) * FlxG.camera.zoom), Math.floor(LeftButton.width), Math.floor(LeftButton.height));
-		rightCam.follow(RightButton, FlxCamera.STYLE_NO_DEAD_ZONE);
-		FlxG.addCamera(rightCam);
-		
-		JumpButton = new FlxButton(1000, 200, "Jump");
-		JumpButton.scrollFactor = new FlxPoint(1.0, 1.0);
+		JumpButton = new FlxButton(FlxG.width - 90, (FlxG.height - 20), "Jump");
+		JumpButton.scrollFactor = new FlxPoint(0.0, 0.0);
 		JumpButton.color = 0xff729954;
 		JumpButton.label.color = 0xffd8eba2;
+		JumpButton.cameras = [FlxG.camera];
 		add(JumpButton);
-		
-		var jumpCam:FlxCamera = new FlxCamera(Math.floor((FlxG.width - 90) * FlxG.camera.zoom), Math.floor((FlxG.height - 20) * FlxG.camera.zoom), Math.floor(LeftButton.width), Math.floor(LeftButton.height));
-		jumpCam.follow(JumpButton, FlxCamera.STYLE_NO_DEAD_ZONE);
-		FlxG.addCamera(jumpCam);
 	}
 	
 	override public function destroy():Void
@@ -427,6 +426,7 @@ class PlayState extends FlxState
 		tileMap = new FlxTilemap();
 		tileMap.loadMap(FlxTilemap.arrayToCSV(map, MAP_WIDTH_IN_TILES), "assets/img_tiles.png", 8, 8, FlxTilemap.OFF);
 		tileMap.updateTileSheet();
+		tileMap.cameras = [FlxG.camera];
 		add(tileMap);
 	}
 	

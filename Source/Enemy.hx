@@ -6,6 +6,7 @@ import org.flixel.FlxEmitter;
 import org.flixel.FlxG;
 import org.flixel.FlxGroup;
 import org.flixel.FlxObject;
+import org.flixel.FlxParticle;
 import org.flixel.FlxPoint;
 import org.flixel.FlxSprite;
 import org.flixel.FlxU;
@@ -15,14 +16,14 @@ class Enemy extends FlxSprite
 {
 	//References to other game objects:
 	private var _player:Player;		//The player object
-	private var _bullets:FlxGroup;	//A group of enemy bullet objects (Enemies shoot these out)
-	private var _gibs:FlxEmitter;		//A group of bits and pieces that explode when the Enemy dies.
+	private var _bullets:FlxGroup<EnemyBullet>;	//A group of enemy bullet objects (Enemies shoot these out)
+	private var _gibs:FlxEmitter<FlxParticle>;		//A group of bits and pieces that explode when the Enemy dies.
 	
 	//We use this number to figure out how fast the ship is flying
 	private var _thrust:Float;
 	
 	//A special effect - little poofs shoot out the back of the ship
-	private var _jets:FlxEmitter;
+	private var _jets:FlxEmitter<FlxParticle>;
 	
 	//These are "timers" - numbers that count down until we want something interesting to happen.
 	private var _timer:Float;		//Helps us decide when to fly and when to stop flying.
@@ -54,7 +55,7 @@ class Enemy extends FlxSprite
 		
 		//Here we are setting up the jet particles
 		// that shoot out the back of the ship.
-		_jets = new FlxEmitter();
+		_jets = new FlxEmitter<FlxParticle>();
 		_jets.setRotation();
 		_jets.makeParticles(FlxAssets.imgJet, 15, 0, false, 0);
 		
@@ -65,12 +66,14 @@ class Enemy extends FlxSprite
 		drag.x = 35;
 		_thrust = 0;
 		_playerMidpoint = new FlxPoint();
+		
+		_jets.setAll("cameras", [FlxG.camera]);
 	}
 	
 	//Each time an Enemy is recycled (in this game, by the Spawner object)
 	//we call init() on it afterward.  That allows us to set critical parameters
 	//like references to the player object and the ship's new position.
-	public function init(xPos:Int, yPos:Int, Bullets:FlxGroup, Gibs:FlxEmitter, ThePlayer:Player):Void
+	public function init(xPos:Int, yPos:Int, Bullets:FlxGroup<EnemyBullet>, Gibs:FlxEmitter<FlxParticle>, ThePlayer:Player):Void
 	{
 		_player = ThePlayer;
 		_bullets = Bullets;
@@ -159,7 +162,7 @@ class Enemy extends FlxSprite
 			{
 				//First, recycle a bullet from the bullet pile.
 				//If there are none, recycle will automatically create one for us.
-				var b:EnemyBullet = cast(_bullets.recycle(EnemyBullet), EnemyBullet);
+				var b:EnemyBullet = _bullets.recycle(EnemyBullet);
 				//Then, shoot it from our midpoint out along our angle.
 				b.shoot(getMidpoint(_point), angle);
 			}
@@ -239,7 +242,11 @@ class Enemy extends FlxSprite
 		flicker(0);
 		_jets.kill();
 		_gibs.at(this);
-		_gibs.start(true,3,0,20);
+		#if flash
+		_gibs.start(true, 3, 0, 20);
+		#else
+		_gibs.start(true, 3, 0, 10);
+		#end
 		FlxG.score += 200;
 	}
 	

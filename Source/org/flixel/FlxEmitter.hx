@@ -12,7 +12,7 @@ import nme.display.Bitmap;
  * It is easy to use and relatively efficient,
  * relying on <code>FlxGroup</code>'s RECYCLE POWERS.
  */
-class FlxEmitter extends FlxGroup
+class FlxEmitter<T : FlxParticle> extends FlxGroup<FlxParticle>
 {
 	/**
 	 * The X position of the top left corner of the emitter in world space.
@@ -155,7 +155,7 @@ class FlxEmitter extends FlxGroup
 	 * @param	Collide			Whether the particles should be flagged as not 'dead' (non-colliding particles are higher performance).  0 means no collisions, 0-1 controls scale of particle's bounding box.
 	 * @return	This FlxEmitter instance (nice for chaining stuff together, if you're into that).
 	 */
-	public function makeParticles(Graphics:Dynamic, ?Quantity:Int = 50, ?BakedRotations:Int = 16, ?Multiple:Bool = false, ?Collide:Float = 0.8):FlxEmitter
+	public function makeParticles(Graphics:Dynamic, ?Quantity:Int = 50, ?BakedRotations:Int = 16, ?Multiple:Bool = false, ?Collide:Float = 0.8):FlxEmitter<T>
 	{
 		maxSize = Quantity;
 		var totalFrames:Int = 1;
@@ -243,7 +243,7 @@ class FlxEmitter extends FlxGroup
 				on = false;
 				var i:Int = 0;
 				var l:Int = _quantity;
-				if ((l <= 0) || (l > Std.int(length)))
+				if ((l <= 0) || (l > length))
 				{
 					l = length;
 				}
@@ -308,7 +308,7 @@ class FlxEmitter extends FlxGroup
 	 */
 	public function emitParticle():Void
 	{
-		var particle:FlxParticle = cast(recycle(FlxParticle), FlxParticle);
+		var particle:FlxParticle = recycle(FlxParticle);
 		particle.lifespan = lifespan;
 		particle.elasticity = bounce;
 		particle.reset(x - (Math.floor(particle.width) >> 1) + FlxG.random() * width, y - (Math.floor(particle.height) >> 1) + FlxG.random() * height);

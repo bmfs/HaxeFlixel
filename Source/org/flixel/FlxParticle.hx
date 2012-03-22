@@ -63,12 +63,10 @@ class FlxParticle extends FlxSprite
 		}
 		if(acceleration.y > 0) //special behavior for particles with gravity
 		{
-			//if (touching & FlxObject.FLOOR)
 			if ((touching & FlxObject.FLOOR) != 0)
 			{
 				drag.x = friction;
 				
-				//if(!(wasTouching & FlxObject.FLOOR))
 				if((wasTouching & FlxObject.FLOOR) == 0)
 				{
 					if (velocity.y < -elasticity * 10)

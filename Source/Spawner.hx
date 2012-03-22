@@ -4,19 +4,20 @@ import nme.Assets;
 import org.flixel.FlxEmitter;
 import org.flixel.FlxG;
 import org.flixel.FlxGroup;
+import org.flixel.FlxParticle;
 import org.flixel.FlxSprite;
 
 class Spawner extends FlxSprite
 {
 	private var _timer:Float;
-	private var _bots:FlxGroup;
-	private var _botBullets:FlxGroup;
-	private var _botGibs:FlxEmitter;
-	private var _gibs:FlxEmitter;
+	private var _bots:FlxGroup<Enemy>;
+	private var _botBullets:FlxGroup<EnemyBullet>;
+	private var _botGibs:FlxEmitter<FlxParticle>;
+	private var _gibs:FlxEmitter<FlxParticle>;
 	private var _player:Player;
 	private var _open:Bool;
 	
-	public function new(X:Int, Y:Int, Gibs:FlxEmitter, Bots:FlxGroup, BotBullets:FlxGroup, BotGibs:FlxEmitter, ThePlayer:Player)
+	public function new(X:Int, Y:Int, Gibs:FlxEmitter<FlxParticle>, Bots:FlxGroup<Enemy>, BotBullets:FlxGroup<EnemyBullet>, BotGibs:FlxEmitter<FlxParticle>, ThePlayer:Player)
 	{
 		super(X, Y);
 		loadGraphic("assets/spawner.png", true);
@@ -53,20 +54,33 @@ class Spawner extends FlxSprite
 		{
 			limit = 4;
 		}
-		if(_timer > limit)
+		
+		if (_bots.countLiving() < _bots.maxSize)
 		{
-			_timer = 0;
-			makeBot();
-		}
-		else if(_timer > limit - 0.35)
-		{
-			if(!_open)
+			if(_timer > limit)
 			{
-				_open = true;
-				play("open");
+				_timer = 0;
+				makeBot();
+			}
+			else if(_timer > limit - 0.35)
+			{
+				if(!_open)
+				{
+					_open = true;
+					play("open");
+				}
+			}
+			else if(_timer > 1)
+			{
+				if(_open)
+				{
+					play("close");
+					_open = false;
+				}
 			}
 		}
-		else if(_timer > 1)
+		
+		if(_timer > 1)
 		{
 			if(_open)
 			{
@@ -74,7 +88,7 @@ class Spawner extends FlxSprite
 				_open = false;
 			}
 		}
-			
+		
 		super.update();
 	}
 	
@@ -119,7 +133,7 @@ class Spawner extends FlxSprite
 	
 	private function makeBot():Void
 	{
-		cast(_bots.recycle(Enemy), Enemy).init(Math.floor(x + width / 2), Math.floor(y + height / 2), _botBullets, _botGibs, _player);
+		_bots.recycle(Enemy).init(Math.floor(x + width / 2), Math.floor(y + height / 2), _botBullets, _botGibs, _player);
 	}
 	
 	private function turnOffSlowMo():Void

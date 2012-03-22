@@ -276,9 +276,9 @@ class FlxCollision
 	 * @return	FlxGroup The 4 FlxTileblocks that are created are placed into this FlxGroup which should be added to your State
 	 */
 	#if flash
-	public static function createCameraWall(camera:FlxCamera, placement:UInt, thickness:UInt, ?adjustWorldBounds:Bool = false):FlxGroup
+	public static function createCameraWall(camera:FlxCamera, placement:UInt, thickness:UInt, ?adjustWorldBounds:Bool = false):FlxGroup<FlxTileblock>
 	#else
-	public static function createCameraWall(camera:FlxCamera, placement:Int, thickness:Int, ?adjustWorldBounds:Bool = false):FlxGroup
+	public static function createCameraWall(camera:FlxCamera, placement:Int, thickness:Int, ?adjustWorldBounds:Bool = false):FlxGroup<FlxTileblock>
 	#end
 	{
 		var left:FlxTileblock = null;
@@ -311,7 +311,7 @@ class FlxCollision
 				}
 		}
 		
-		var result:FlxGroup = new FlxGroup(4);
+		var result:FlxGroup<FlxTileblock> = new FlxGroup<FlxTileblock>(4);
 		
 		result.add(left);
 		result.add(right);

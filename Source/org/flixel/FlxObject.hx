@@ -759,7 +759,7 @@ class FlxObject extends FlxBasic
 		{
 			var results:Bool = false;
 			var i:Int = 0;
-			var grp:FlxGroup = cast(ObjectOrGroup, FlxGroup);
+			var grp:FlxGroup<FlxBasic> = cast ObjectOrGroup;
 			var members:Array<FlxBasic> = grp.members;
 			//while(i < length)
 			while(i < grp.length)
@@ -814,7 +814,7 @@ class FlxObject extends FlxBasic
 			var results:Bool = false;
 			var basic:FlxBasic;
 			var i:Int = 0;
-			var grp:FlxGroup = cast(ObjectOrGroup, FlxGroup);
+			var grp:FlxGroup<FlxBasic> = cast ObjectOrGroup;
 			var members:Array<FlxBasic> = grp.members;
 			//while(i < length)
 			while(i < Std.int(grp.length))

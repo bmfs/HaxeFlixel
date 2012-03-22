@@ -1,13 +1,15 @@
 package;
 
 import nme.Assets;
+import org.flixel.FlxBasic;
 import org.flixel.FlxEmitter;
 import org.flixel.FlxG;
+import org.flixel.FlxParticle;
 import org.flixel.FlxState;
 import org.flixel.FlxText;
 import org.flixel.FlxTextField;
 
-class VictoryState extends FlxState
+class VictoryState<T : FlxBasic> extends FlxState<FlxBasic>
 {
 	private var _timer:Float;
 	private var _fading:Bool;
@@ -19,7 +21,7 @@ class VictoryState extends FlxState
 		FlxG.flash(0xffd8eba2);
 		
 		//Gibs emitted upon death
-		var gibs:FlxEmitter = new FlxEmitter(0, -50);
+		var gibs:FlxEmitter<FlxParticle> = new FlxEmitter<FlxParticle>(0, -50);
 		gibs.setSize(FlxG.width, 0);
 		gibs.setXSpeed();
 		gibs.setYSpeed(0, 100);
@@ -59,7 +61,7 @@ class VictoryState extends FlxState
 	
 	private function onPlay():Void 
 	{
-		FlxG.switchState(new PlayState());
+		FlxG.switchState(new PlayState<FlxBasic>());
 	}
 	
 }

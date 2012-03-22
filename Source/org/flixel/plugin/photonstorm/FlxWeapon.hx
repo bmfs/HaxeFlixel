@@ -51,7 +51,7 @@ class FlxWeapon
 	/**
 	 * The FlxGroup into which all the bullets for this weapon are drawn. This should be added to your display and collision checked against it.
 	 */
-	public var group:FlxGroup;
+	public var group:FlxGroup<Bullet>;
 	
 	//	Bullet values
 	public var bounds:FlxRect;
@@ -189,7 +189,7 @@ class FlxWeapon
 	public function makePixelBullet(quantity:Int, ?width:Int = 2, ?height:Int = 2, ?color:Int = 0xffffffff, ?offsetX:Int = 0, ?offsetY:Int = 0):Void
 	#end
 	{
-		group = new FlxGroup(quantity);
+		group = new FlxGroup<Bullet>(quantity);
 		
 		for (b in 0...(quantity))
 		{
@@ -223,7 +223,7 @@ class FlxWeapon
 		quantity = FlxU.fromIntToUInt(quantity);
 		rotations = FlxU.fromIntToUInt(rotations);
 		
-		group = new FlxGroup(quantity);
+		group = new FlxGroup<Bullet>(quantity);
 		
 		rotateToAngle = autoRotate;
 		
@@ -270,7 +270,7 @@ class FlxWeapon
 	public function makeAnimatedBullet(quantity:Int, imageSequence:Dynamic, frameWidth:Int, frameHeight:Int, frames:Array<Int>, frameRate:Int, looped:Bool, ?offsetX:Int = 0, ?offsetY:Int = 0):Void
 	{
 		quantity = FlxU.fromIntToUInt(quantity);
-		group = new FlxGroup(quantity);
+		group = new FlxGroup<Bullet>(quantity);
 		
 		for (b in 0...(quantity))
 		{
@@ -668,7 +668,7 @@ class FlxWeapon
 		var bullet:Bullet;
 		for (i in 0...(group.members.length))
 		{
-			bullet = cast(group.members[i], Bullet);
+			bullet = group.members[i];
 			if (bullet.exists == false)
 			{
 				result = bullet;

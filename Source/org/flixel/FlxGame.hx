@@ -59,7 +59,7 @@ class FlxGame extends Sprite
 	/**
 	 * Current game state.
 	 */
-	public var _state:FlxState;
+	public var _state:FlxState<FlxBasic>;
 	/**
 	 * Mouse cursor.
 	 */
@@ -68,7 +68,7 @@ class FlxGame extends Sprite
 	/**
 	 * Class type of the initial/first game state for the game, usually MenuState or something like that.
 	 */
-	private var _iState:Class<FlxState>;
+	private var _iState:Class<FlxState<FlxBasic>>;
 	/**
 	 * Whether the game object's basic initialization has finished yet.
 	 */
@@ -103,7 +103,7 @@ class FlxGame extends Sprite
 	/**
 	 * If a state change was requested, the new state object is stored here until we switch to it.
 	 */
-	public var _requestedState:FlxState;
+	public var _requestedState:FlxState<FlxBasic>;
 	/**
 	 * A flag for keeping track of whether a game reset was requested or not.
 	 */
@@ -183,7 +183,7 @@ class FlxGame extends Sprite
 	 * @param	FlashFramerate	Sets the actual display framerate for Flash player (default is 30 times per second).
 	 * @param	UseSystemCursor	Whether to use the default OS mouse pointer, or to use custom flixel ones.
 	 */
-	public function new(GameSizeX:Int, GameSizeY:Int, InitialState:Class<FlxState>, ?Zoom:Float = 1, GameFramerate:Int = 60, ?FlashFramerate:Int = 30, ?UseSystemCursor:Bool = false)
+	public function new(GameSizeX:Int, GameSizeY:Int, InitialState:Class<FlxState<FlxBasic>>, ?Zoom:Float = 1, GameFramerate:Int = 60, ?FlashFramerate:Int = 30, ?UseSystemCursor:Bool = false)
 	{
 		super();
 		
@@ -560,7 +560,6 @@ class FlxGame extends Sprite
 		if(_requestedReset)
 		{
 			_requestedReset = false;
-			//_requestedState = new _iState();
 			_requestedState = Type.createInstance(_iState, []);
 			_replayTimer = 0;
 			_replayCancelKeys = null;
