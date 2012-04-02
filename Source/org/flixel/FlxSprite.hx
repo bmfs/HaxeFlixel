@@ -834,10 +834,12 @@ class FlxSprite extends FlxObject
 			}
 		}
 		
+		#if flash
 		if (dirty)
 		{
 			calcFrame();
 		}
+		#end
 	}
 	
 	/**
